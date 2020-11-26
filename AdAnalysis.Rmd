@@ -1,12 +1,12 @@
 ---
 title: "Facebook Advertisement Image Analysis"
 author: "Samantha Chiu and Leanna Moron"
-date: "31 OCT"
+date: "26 NOV"
 output:
-  pdf_document: default
-  word_document: default
   html_document:
     df_print: paged
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -15,9 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction 
 
-Data sources are week 1-2 Facebook Advertisement Image data with fieldwork dates are from 14 May to 28 May (for all 5 Advertisement Images, no social desirability questions or image changes were introduced in these weeks). UAS 244 data is used with fieldwork dates of 5/13-6/9.  
-
-# Summary of Data
+Data sources are weeks 1-2 of the Facebook advertisement image data fielded from 5/14/20-5/28/20, and Understanding America Survey (UAS-255, wave 5) fielded from 5/13/20 to 6/9/20. The five (5) advertisement images include a neutral image, COVID, data privacy, finance and mental health. There were no social desirability questions fielded during this time period. The data privacy and finance ad images did not change during this time period.
 
 ```{r, loading FB data, include = FALSE}
 library(tidyverse)
@@ -25,19 +23,20 @@ library(haven)
 library(knitr)
 library(expss)
 library(tinytex)
+library(kableExtra)
+library(dplyr)
+
 week12 <- read_dta("C:/Users/Samantha/Desktop/week12.dta")
 #View(week12)
 attach(week12)
 ```
-
-Confirming the four respondents who are ineligible (under 18 years old) have been removed
 
 ``` {r, examining age eligibility, include = FALSE}
 #summary (Q11)
 table (Q11)
 ```
 
-``` {r, removing under 18, echo = FALSE}
+``` {r, removing under 18, echo = FALSE, include = FALSE}
 data <- subset(week12, Q11 >= 2)
 cro(data$Q11)
 ```
@@ -48,14 +47,12 @@ uas244 <- read_dta("C:/Users/Samantha/Desktop/uas244.dta")
 #cro(uas244$agerange)
 ```
 
-Total sample from each advertisement image
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, include = FALSE}
 cro(data$Image)
 ```
 ## Comparing by Advertisement Images by Question
 
-The following section are the comparison tables for the 5 advertisement images
+The following section are the comparison tables for the 5 advertisement images using the Facebook Advertisent Image data 
 
 ### Mental Health
 ```{r, echo = FALSE, include = FALSE}
@@ -76,12 +73,10 @@ total <- c(343, 576, 61, 145, 210)
 ```
 
 ```{r, setting up table for Kable, include = FALSE}
-library(kableExtra)
-library(dplyr)
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q1, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q1, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Not at all", "Several Days", "More Then Half The Days", "Nearly Every Day", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 
@@ -92,6 +87,7 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 65.182, df = 12, p < 0.001", notation = "none") %>%
+row_spec(5, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
@@ -114,9 +110,9 @@ chisq.test((table_Q2))
 
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q2, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q2, 2)*100, format = "f", digits =1), formatC(total, format ="d"))
 rownames(table) <- c("Not At All or Less Than 1 Day", "1-2 Days", "3-4 Days", "5-7 Days", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 
@@ -127,6 +123,7 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 35.237, df = 12, p < 0.001", notation = "none") %>%
+row_spec(5, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
@@ -149,18 +146,19 @@ chisq.test((table_Q3))
 ```
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q3, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q3, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Not Acceptable", "Barely Acceptable", "Medium Acceptable", "Quite Acceptable", "Very Acceptable", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 ```{r, echo = FALSE}
 require(knitr)
 kable(table, 
-      caption = "Table 3. Responses from five advertisement image samples for \"Sensors installed on a smartphone collect data on  health conditions. With consent of the owner, these data are transmitted to a public authority for the purpose of detecting outbreaks of diseases early and for developing solutions. The data are safe, anonymous, and protected from misuse. How acceptable is it to you to use these data for this purpose?\"", 
+      caption = "Table 3. Responses from five advertisement image samples for \"Sensors installed on a smartphone collect data on  health conditions. With consent of the owner, these data are transmitted to a public authority for the purpose of detecting outbreaks of diseases early and for developing solutions. **The data are safe, anonymous, and protected from misuse.** How acceptable is it to you to use these data for this purpose?\"", 
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 21.669, df = 16, p = 0.1542", notation = "none") %>%
+row_spec(6, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
@@ -179,11 +177,12 @@ prop.table(table_Q3_1,2)
 print(table_Q3)
 chisq.test((table_Q3_1))
 ```
+
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q3_1, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q3_1, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Not Acceptable", "Barely Acceptable", "Medium Acceptable", "Quite Acceptable", "Very Acceptable", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 ```{r, echo = FALSE}
@@ -193,6 +192,7 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 37.79, df = 16, p = 0.0016", notation = "none") %>%
+row_spec(6, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
@@ -213,9 +213,9 @@ chisq.test((table_Q4))
 ```
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q4, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q4, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Not Acceptable", "Barely Acceptable", "Medium Acceptable", "Quite Acceptable", "Very Acceptable", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 
@@ -226,6 +226,7 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 56.29, df = 16, p < 0.001", notation = "none") %>%
+row_spec(6, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
@@ -248,9 +249,9 @@ chisq.test((table_Q5))
 
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q5, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q5, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Very Unlikely", "Somewhat Unlikely", "Somewhat Likely", "Very Likely", "Unsure", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 ```{r, echo = FALSE}
@@ -260,6 +261,7 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 70.07 (approximation may be incorrect due to low cell count), df = 16, p < 0.001", notation = "none") %>%
+row_spec(6, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
@@ -281,9 +283,9 @@ chisq.test((table_Q6))
 ```
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q6, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q6, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Yes", "No", "Unsure", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 
@@ -294,11 +296,12 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 11.06, df = 8, p = 0.1983", notation = "none") %>%
+row_spec(4, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
 
-# Finance
+### Finance
 
 ```{r}
 # Variable (Q7) requires recoding into groups: discuss the group breaks
@@ -321,9 +324,9 @@ chisq.test((table_Q8))
 ```
 ```{r, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_Q8, 2)*100, format = "f", digits =2), formatC(total, format ="d"))
+table <- rbind(formatC(prop.table(table_Q8, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
 rownames(table) <- c("Yes", "No", "Unsure", "Total N")
-colnames(table) <- c("Control", "COVID", "Data Privacy","Finance", "Mental Health")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
 
@@ -334,120 +337,13 @@ kable(table,
       digits = 2, 
       align = "c") %>%
 add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 9.14, df = 8, p = 0.3303", notation = "none") %>%
+row_spec(4, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
-### Gender identity
-```{r, echo = FALSE}
-cro(data$Q9)
-```
+## UAS SAMPLE (Weighted) with Facebook Ad Image (All) 
 
-```{r, echo = FALSE}
-table_Q9 <- table(data$Q9, data$Image)
-prop.table(table_Q9,2)
-print(table_Q9)
-chisq.test((table_Q9))
-# Response Options 
-# 1 = Woman, 2 = Man, 3 = Trans woman, 4 = Trans man, 5 = Non-binary 6 = Other
-```
-
-### Married
-```{r, echo = FALSE}
-cro(data$Q10)
-```
-
-```{r, echo = FALSE}
-table_Q10 <- table(data$Q10, data$Image)
-prop.table(table_Q10,2)
-print(table_Q10)
-chisq.test((table_Q10))
-```
-
-### Age
-```{r, echo = FALSE}
-cro(data$Q11)
-```
-
-```{r, echo = FALSE}
-table_Q11 <- table(data$Q11, data$Image)
-prop.table(table_Q11,2)
-print(table_Q11)
-chisq.test((table_Q11))
-## discuss
-```
-
-### Education 
-```{r, echo = FALSE}
-cro(data$Q12)
-```
-
-```{r, echo = FALSE}
-table_Q12 <- table(data$Q12, data$Image)
-prop.table(table_Q12,2)
-print(table_Q12)
-chisq.test((table_Q12))
-```
-
-## UAS Sample
-```{r, echo = FALSE}
-#colnames(uas244)
-attach(uas244)
-
-# To do: clean out dates that do not overlap (10-18)
-#table (start_month, start_date)
-library(tidyverse)
-```
-
-# Question 1: Mental Health
-```{r, echo = FALSE}
-cro(uas244$cr027a)
-```
-
-# Question 2: Mental Health  
-```{r, echo = FALSE}
-cro(uas244$cr027c)
-```
-
-# Question 5: COVID-19
-```{r, echo = FALSE}
-cro(uas244$cr030)
-```
-
-# Question 6: COVID-19
-```{r, echo = FALSE}
-cro(uas244$cr018a)
-```
-
-# Question 7: Finance
-```{r, echo = FALSE}
-# Recode into groups
-# cro(uas244$lr015)
-```
-
-# Question 8: Finance 
-```{r, echo = FALSE}
-cro(uas244$ei002)
-```
-# Question 9: Gender
-```{r, echo = FALSE}
-cro(uas244$gender)
-```
-
-# Question 10: Marital Status
-```{r, echo = FALSE}
-cro(uas244$maritalstatus)
-```
-
-# Question 11: Age Range
-```{r, echo = FALSE}
-cro(uas244$agerange)
-```
-# Question 12: Education
-```{r, echo = FALSE}
-cro(uas244$education)
-```
-
-## POOLED AD IMAGES WITH UAS WEIGHTS 
+Comparing the USC Understanding America Sample (weighted) and Facebook Advertisement Image (pooled all 5 images) data  
 
 ### MENTAL HEALTH
 
@@ -455,8 +351,11 @@ cro(uas244$education)
 library(survey)
 #colnames(uas244)
 attach(uas244)
-design <- svydesign(id=~1, weights=final_weight, data=uas244)
+```
 
+
+```{r, include = FALSE}
+design <- svydesign(id=~1, weights=final_weight, data=uas244)
 table_cr027a_w <-svytable(~cr027a, design = design)
 table_Q1 <-table(data$Q1)
 table_MH_1_w <- cbind(table_cr027a_w, table_Q1)
@@ -466,7 +365,7 @@ totals <- addmargins(table_Q1)
 totals
 totals <- addmargins(table_cr027a_w)
 totals
-totals <- c(627.56, 1335)
+totals <- c(6287.56, 1335)
 
 prop.table(table_MH_1_w, 2)
 chisq.test(table_MH_1_w)
@@ -474,259 +373,442 @@ chisq.test(table_MH_1_w)
 
 ```{r, echo = FALSE, include = FALSE}
 options(kableExtra.latex.load_packages = FALSE)
-table <- rbind(formatC(prop.table(table_MH_1_w, 2)*100, format = "f", digits =2), formatC(totals, format ="d"))
+table <- rbind(formatC(prop.table(table_MH_1_w, 2)*100, format = "f", digits = 1), formatC(totals, format ="d"))
 rownames(table) <- c("Not At All or Less Than 1 Day", "1-2 Days", "3-4 Days", "5-7 Days", "Total N")
-colnames(table) <- c("UAS Sample", "Facebook Ad Image Sample")
+colnames(table) <- c("UAS Sample (%)", "Facebook Ad Image Sample (%)")
 table
 ```
 
 ```{r, echo = FALSE}
 require(knitr)
 kable(table, 
-      caption = "Table 1. Responses from Understanding Americas Survey and Facebook Advertisement Image Pooled Samples for \"In the past fourteen days, how often have you felt nervous, anxious, or on edge?\"", 
+      caption = "Table 1. Responses from Understanding America Survey and Facebook Advertisement Image Sample for \"In the past fourteen days, how often have you felt nervous, anxious, or on edge?\"", 
       digits = 2, 
-      align = "c") %>%
-add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 305.6, df = 3, p < 0.001", notation = "none") %>%
-kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
+      align = "c") %>% 
+  add_footnote ("Note: Proportion of UAS and FB respondents for each response category; X-squared = 305.6, df = 3, p < 0.001", notation = "none") %>%
+  row_spec(5, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
-# Question 2: In the past 7 days, how often have you felt depressed?
-# UAS and Pooled Ad Images
-
-```{r}
+```{r, echo=FALSE, include=FALSE}
 table_cr027c_w <- svytable(~cr027c, design = design)
 table_Q2 <-table (data$Q2)
 table_MH_2_w <- cbind(table_cr027c_w, table_Q2)
+
+total.uas<-addmargins(table_cr027c_w)
+total.uas
+total.uas[[length(total.uas)]]
+
+total.fb<-addmargins(table_Q2)
+total.fb
+total.fb[[length(total.fb)]]
+
+total<-cbind(total.uas[[length(total.uas)]], total.fb[[length(total.fb)]])
+total
+
 prop.table(table_MH_2_w, 2)
 chisq.test(table_MH_2_w)
 ```
-# Question 3: Data Privacy
-# Texas Survey (TBD)
+```{r, echo = FALSE, include = FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_MH_2_w, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("Not At All or Less Than 1 Day", "1-2 Days", "3-4 Days", "5-7 Days", "Total N")
+colnames(table) <- c("UAS Sample (%)", "Facebook Ad Image Sample (%)")
+table
+```
+```{r, echo = FALSE}
+require(knitr)
+kable(table, 
+      caption = "Table 2. Responses from Understanding America Survey and Facebook Advertisement Image Sample for \"In the past 7 days, how often have you felt depressed? \"", 
+      digits = 2, 
+      align = "c") %>% 
+  add_footnote ("Note: Proportion of UAS and FB respondents for each response category; X-squared = 272.9, df = 3, p < 0.001", notation = "none") %>%
+  row_spec(5, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
+```
 
-# Question 3_1: Data Privacy
-# Texas Survey (TBD)
+### Data Privacy
 
-# Question 4: Data Privacy
-# Texas Survey (TBD)
+Questions (Q3, Q3_1, Q4) on data privacy were not fielded in the UAS study; therefore, they are not included in the UAS to FB sample comparison
 
-# Question 5: COVID19 -- vaccinated if available? 
-```{r}
+### COVID-19 
+```{r, echo=FALSE, include=FALSE}
 table_cr030_w <- svytable(~cr030, design = design)
 table_Q5 <-table (data$Q5)
 table_COVID_1_w <- cbind(table_cr030_w, table_Q5)
 prop.table(table_COVID_1_w, 2)
 chisq.test(table_COVID_1_w)
+
+total.uas<-addmargins(table_cr030_w)
+total.uas
+total.fb<-addmargins(table_Q5)
+total.fb
+total<-cbind(total.uas[[length(total.uas)]],total.fb[[length(total.fb)]])
 ```
 
-# Question 6: COVID 19 -- limiting non essential travel 
-```{r}
+```{r, echo=FALSE, include=FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_COVID_1_w, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("Very Unlikely", "Somewhat Unlikely", "Somewhat Likely", "Very Likely", "Unsure" ,"Total N")
+colnames(table) <- c("UAS Sample (%)", "Facebook Ad Image Sample (%)")
+table
+```
+
+```{r, echo = FALSE}
+require(knitr)
+kable(table, 
+      caption = "Table 1. Responses from Understanding America Survey and Facebook Advertisement Image Sample for \"How likely are you to get vaccinated for coronavirus once a vaccine is available to the public?\"", 
+      digits = 2, 
+      align = "c") %>% 
+  add_footnote ("Note: Proportion of UAS and FB respondents for each response category; X-squared = 276.6, df = 4, p < 0.001", notation = "none") %>%
+  row_spec(6, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
+```
+
+```{r, echo=FALSE, include=FALSE}
 table_cr018a_w <- svytable(~cr018a, design = design)
 table_Q6 <-table (data$Q6)
 table_COVID_2_w <- cbind(table_cr018a_w, table_Q6)
 prop.table(table_COVID_2_w, 2)
 chisq.test(table_COVID_2_w)
-```
-# Question 7: Finance -- run out of money (recode needed)
 
-# Question 8: Finance -- run out of food
-```{r}
+total.uas<-addmargins(table_cr018a_w)
+total.uas[[length(total.uas)]]
+total.fb<-addmargins(table_Q6)
+total.fb[[length(total.fb)]]
+total<-cbind(total.uas[[length(total.uas)]], total.fb[[length(total.fb)]])
+
+```
+
+```{r, echo=FALSE, include=FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_COVID_2_w, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("Yes", "No", "Unsure", "Total N")
+colnames(table) <- c("UAS Sample (%)", "Facebook Ad Image Sample (%)")
+table
+```
+
+```{r, echo = FALSE}
+require(knitr)
+kable(table, 
+      caption = "Table 6. Responses from Understanding Americas Survey and Facebook Advertisement Image Sample for \"Are Federal, state, or local governments currently requiring you to limit non-essential travel?\"", 
+      digits = 2, 
+      align = "c") %>% 
+  add_footnote ("Note: Proportion of UAS and FB respondents for each response category; X-squared = 64.3, df = 2, p < 0.001", notation = "none") %>%
+  row_spec(4, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
+```
+
+### FINANCE
+
+Table 7. The first finance question is on a 0-100 scale. 
+
+```{r, echo=FALSE, include=FALSE}
+#table_lr015_w <- svytable(~lr015, design = design)
+#table_Q8 <-table (data$Q8)
+#table_FINANCE_1_w <- cbind(table_lr015_w, table_Q7) #need to create table_Q7
+#prop.table(table_FINANCE_1_w, 2)
+#chisq.test(table_FINANCE_1_w)
+```
+
+
+```{r, echo=FALSE, include=FALSE}
 table_ei002_w <- svytable(~ei002, design = design)
 table_Q8 <-table (data$Q8)
 table_FINANCE_2_w <- cbind(table_ei002_w, table_Q8)
 prop.table(table_FINANCE_2_w, 2)
 chisq.test(table_FINANCE_2_w)
-```
-## Looking at Control Data Only
-```{r}
-control.data <- subset(data, data$Image == 1)
-cro(control.data$Image)
-```
-# Question 1: Mental Health 
-# UAS weighted and Control Image Only
 
-```{r}
-library(DescTools)
-
-table_Q1_control <-table(control.data$Q1)
-prop.table(table_Q1_control)
-
-table_MH_1_w_control<- cbind(table_cr027a_w, table_Q1_control)
-print(table_MH_1_w_control)
-prop.table(table_MH_1_w_control, 2)
-chisq.test(table_MH_1_w_control)
-```
-```{r}
-Desc(table_MH_1_w_control, verbose = "high")
+total.uas<-addmargins(table_ei002_w)
+total.uas[[length(total.uas)]]
+total.fb<-addmargins(table_Q8)
+total.fb[[length(total.fb)]]
+total<-cbind(total.uas[[length(total.uas)]], total.fb[[length(total.fb)]])
 ```
 
-# Question 2: How often have you felt depressed
-# UAS weighted and control image only
-
-```{r}
-table_Q2_control <-table(control.data$Q2)
-prop.table(table_Q2_control)
-
-table_MH_2_w_control<- cbind(table_cr027a_w, table_Q2_control)
-print(table_MH_2_w_control)
-prop.table(table_MH_2_w_control, 2)
-chisq.test(table_MH_2_w_control)
-```
-```{r}
-Desc(table_MH_2_w_control, verbose = "high")
+```{r, echo = FALSE, include = FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_FINANCE_2_w, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("Yes", "No", "Unsure", "Total N")
+colnames(table) <- c("UAS Sample (%)", "Facebook Ad Image Sample (%)")
+table
 ```
 
-# Question 5: COVID - vaccine
-# UAS weighted and control image only
-
-```{r}
-table_Q5_control <-table(control.data$Q5)
-prop.table(table_Q5_control)
-
-table_COVID_1_w_control<- cbind(table_cr030_w, table_Q5_control)
-print(table_COVID_1_w_control)
-prop.table(table_COVID_1_w_control, 2)
-chisq.test(table_COVID_1_w_control)
-```
-# Question 6: COVID - limit travel
-# UAS weighted and control image only
-
-```{r}
-table_Q6_control <-table(control.data$Q6)
-prop.table(table_Q6_control)
-
-table_COVID_2_w_control<- cbind(table_cr018a_w, table_Q6_control)
-print(table_COVID_2_w_control)
-prop.table(table_COVID_2_w_control, 2)
-chisq.test(table_COVID_2_w_control)
+```{r, echo=FALSE}
+kable(table, 
+      caption = "Table 8. Responses from Understanding Americas Survey and Facebook Advertisement Image Sample for \"In the past seven days, were you worried you would run out of food because of a lack of money or other resources?\"", 
+      digits = 2, 
+      align = "c") %>% 
+  add_footnote ("Note: Proportion of UAS and FB respondents for each response category; X-squared = 13.0, df = 2, p < 0.01", notation = "none") %>%
+  row_spec(4, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
-# Question 8: Finance - run out of food
-# UAS weighted and control image only
+## UAS weighted, pooled (without control), control image
 
-```{r}
-table_Q8_control <-table(control.data$Q8)
-prop.table(table_Q8_control)
-
-table_FINANCE_2_w_control<- cbind(table_ei002_w, table_Q8_control)
-print(table_FINANCE_2_w_control)
-prop.table(table_FINANCE_2_w_control, 2)
-chisq.test(table_FINANCE_2_w_control)
-```
-
-# UAS weighted, control image, pooled (witout control)
-
-```{r}
+```{r, include = FALSE}
 pooled.data <- subset(data, data$Image > 1)
 cro(pooled.data$Image)
+table_pooled_Q1 <-table(pooled.data$Q1)
+table_pooled_Q1
+prop.table(table_pooled_Q1)
 ```
 
-```{r}
-table_pooled_Q1 <-table(pooled.data$Q1)
-table_Q1_pcw <- cbind(table_Q1, table_pooled_Q1, table_cr027a_w)
+```{r, include = FALSE}
+control.data <- subset(data, data$Image == 1)
+cro(control.data$Image)
+cro(control.data$Q1)
+table_Q1_control <-table(control.data$Q1)
+table_Q1_control
+prop.table(table_Q1_control)
+```
+
+
+```{r, include = FALSE}
+table_Q1_pcw <- cbind(table_cr027a_w, table_pooled_Q1, table_Q1_control)
 print(table_Q1_pcw)
 prop.table(table_Q1_pcw, 2)
 chisq.test(table_Q1_pcw)
 ```
-```{r}
-summary(table_Q1)
-summary(table_pooled_Q1)
-test<-table(cr027a)
-summary(test)
-```
-```{r}
-total <- c(1335, 992, 6311)
+
+```{r, include = FALSE}
+total.uas<-addmargins(table_cr027a_w)
+total.uas[[length(total.uas)]]
+
+total.control<-addmargins(table_Q1_control)
+total.control[[length(total.control)]]
+
+total.pooled<-addmargins(table_pooled_Q1)
+total.pooled[[length(total.pooled)]]
+
+total<-cbind(total.uas[[length(total.uas)]], total.pooled[[length(total.pooled)]], total.control[[length(total.control)]])
+total
 ```
 
-```{r}
+```{r, include = FALSE}
 library(kableExtra)
 options(kableExtra.latex.load_packages = FALSE)
-table<-rbind(formatC(prop.table(table_Q1_pcw, 2), format = "f" , digits = 2), formatC(total, format = "d"))
+table<-rbind(formatC(prop.table(table_Q1_pcw, 2)*100, format = "f" , digits = 1), formatC(total, format = "d"))
 rownames(table) <- c("Not at all", "Several Days", "More Then Half The Days", "Nearly Every Day", "Total N")
-colnames(table) <- c("Control Image", "All Other Images", "UAS Only")
+colnames(table) <- c("UAS Only (%)", "All Other Images (%)",  "Neutral Image (%)")
 table
 ```
 
-```{r}
+```{r, echo = FALSE}
 require(knitr)
 
 kable(table, 
-            caption = "Table 1. Comparing Control Image, All Other Images, and UAS Only Sample for \"In the past fourteen days, how often have you felt nervous, anxious, or on       edge?\"", 
+            caption = "Table 1. Comparing responses from Understanding America Survey, Facebook Advertisement Image, and Control Image Only for \"In the past fourteen days, how often have you felt nervous, anxious, or on edge?\"", 
             digits = 2,
             align = "c") %>%
-  add_footnote("Note: Proportion of respondents for each category; X-squared = 508.7, df = 6, p = 2.2e-16", notation = "none") %>%
+  add_footnote("Note: X$^{2}$ = 371.3, 6 df, p < 0.001", notation = "none") %>%
+  row_spec(5, bold = TRUE) %>%
   kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
 ```
-
-
-
-```{r}
+```{r, include = FALSE}
+cro(pooled.data$Image)
 table_pooled_Q2 <-table(pooled.data$Q2)
-table_Q2_pcw <- cbind(table_Q2, table_pooled_Q2, table_cr027c_w)
+table_pooled_Q2
+prop.table(table_pooled_Q2)
+```
+```{r, include = FALSE}
+table_Q2_control <-table(control.data$Q2)
+table_Q2_control
+prop.table(table_Q2_control)
+```
+```{r, include = FALSE}
+table_Q2_pcw <- cbind(table_cr027c_w, table_pooled_Q2, table_Q2_control)
 print(table_Q2_pcw)
 prop.table(table_Q2_pcw, 2)
 chisq.test(table_Q2_pcw)
 ```
 
-```{r}
+```{r, include = FALSE}
+total.uas<-addmargins(table_cr027c_w)
+total.uas[[length(total.uas)]]
+
+total.control<-addmargins(table_Q2_control)
+total.control[[length(total.control)]]
+
+total.pooled<-addmargins(table_pooled_Q2)
+total.pooled[[length(total.pooled)]]
+
+total<-cbind(total.uas[[length(total.uas)]], total.pooled[[length(total.pooled)]], total.control[[length(total.control)]])
+total
+```
+
+```{r, include = FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table<-rbind(formatC(prop.table(table_Q2_pcw, 2)*100, format = "f" , digits = 1), formatC(total, format = "d"))
+rownames(table) <- c("Not at all", "Several Days", "More Then Half The Days", "Nearly Every Day", "Total N")
+colnames(table) <- c("UAS Only (%)", "All Other Images (%)",  "Neutral Image (%)")
+table
+```
+
+```{r, echo = FALSE}
+require(knitr)
+
+kable(table, 
+            caption = "Table 2. Comparing responses from Understanding America Survey, Facebook Advertisement Pooled Images, and Control Image Only for \"In the past 7 days, how often have you felt depressed?\"", 
+            digits = 2,
+            align = "c") %>%
+  add_footnote(" X$^{2}$ = 298.1, 6 df, p < 0.001", notation = "none") %>%
+  row_spec(5, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
+```
+### Data Privacy
+Questions (Q3, Q3_1, Q4) on data privacy were not fielded in the UAS study; therefore, they are not included in the UAS to FB sample comparison
+
+### COVID-19
+
+```{r, include = FALSE}
 table_pooled_Q5 <-table(pooled.data$Q5)
-table_Q5_pcw <- cbind(table_Q5, table_pooled_Q5, table_cr030_w)
+table_pooled_Q5
+prop.table(table_pooled_Q5)
+```
+```{r, include = FALSE}
+table_Q5_control <-table(control.data$Q5)
+table_Q5_control
+prop.table(table_Q5_control)
+```
+```{r, include = FALSE}
+total.uas<-addmargins(table_cr030_w)
+total.uas[[length(total.uas)]]
+
+total.control<-addmargins(table_Q5_control)
+total.control[[length(total.control)]]
+
+total.pooled<-addmargins(table_pooled_Q5)
+total.pooled[[length(total.pooled)]]
+
+total<-cbind(total.uas[[length(total.uas)]], total.pooled[[length(total.pooled)]], total.control[[length(total.control)]])
+total
+```
+
+
+```{r, include = FALSE}
+table_Q5_pcw <- cbind(table_cr030_w, table_pooled_Q5, table_Q5_control)
 print(table_Q5_pcw)
 prop.table(table_Q5_pcw, 2)
 chisq.test(table_Q5_pcw)
 ```
+```{r, include = FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table<-rbind(formatC(prop.table(table_Q5_pcw, 2)*100, format = "f" , digits = 1), formatC(total, format = "d"))
+rownames(table) <- c("Very Unlikely", "Somewhat Unlikely", "Somewhat Likely", "Very Likely", "Unsure" ,"Total N")
+colnames(table) <- c("UAS Only (%)", "All Other Images (%)",  "Neutral Image (%)")
+table
+```
 
-```{r}
+```{r, echo = FALSE}
+require(knitr)
+
+kable(table, 
+            caption = "Table 5. Comparing responses from Understanding America Survey, Facebook Advertisement Pooled Images, and Control Image Only for \"How likely are you to get vaccinated for coronavirus once a vaccine is available to the public?\"", 
+            digits = 2,
+            align = "c") %>%
+  add_footnote("Note: Proportion of respondents for each category; X-squared = 284.5, df = 8, p < 0.001", notation = "none") %>%
+  row_spec(6, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
+```
+```{r, include = FALSE}
 table_pooled_Q6 <-table(pooled.data$Q6)
-table_Q6_pcw <- cbind(table_Q6, table_pooled_Q6, table_cr018a_w)
+table_pooled_Q6
+prop.table(table_pooled_Q6)
+```
+
+```{r, include = FALSE}
+table_Q6_control <-table(control.data$Q6)
+table_Q6_control
+prop.table(table_Q6_control)
+```
+```{r, include = FALSE}
+total.uas<-addmargins(table_cr018a_w)
+total.uas[[length(total.uas)]]
+
+total.control<-addmargins(table_Q6_control)
+total.control[[length(total.control)]]
+
+total.pooled<-addmargins(table_pooled_Q6)
+total.pooled[[length(total.pooled)]]
+
+total<-cbind(total.uas[[length(total.uas)]], total.pooled[[length(total.pooled)]], total.control[[length(total.control)]])
+total
+```
+```{r, include = FALSE}
+table_Q6_pcw <- cbind(table_cr018a_w, table_Q6_control, table_pooled_Q6)
 print(table_Q6_pcw)
 prop.table(table_Q6_pcw, 2)
 chisq.test(table_Q6_pcw)
 ```
+```{r, include = FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table<-rbind(formatC(prop.table(table_Q6_pcw, 2)*100, format = "f" , digits = 1), formatC(total, format = "d"))
+rownames(table) <- c("Yes", "No", "Unsure", "Total N")
+colnames(table) <- c("UAS Only (%)", "All Other Images (%)",  "Neutral Image (%)")
+table
+```
 
-```{r}
+```{r, echo = FALSE}
+require(knitr)
+
+kable(table, 
+            caption = "Table 6. Comparing responses from Understanding America Survey, Facebook Advertisement Pooled Images, and Control Image Only for \"Are Federal, state, or local governments currently requiring you to limit non-essential travel?\"", 
+            digits = 2,
+            align = "c") %>%
+  add_footnote("Note: Proportion of respondents for each category; X-squared = 66.4, df = 4, p < 0.001", notation = "none") %>%
+  row_spec(4, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
+```
+### FINANCE
+Table 7. The first finance question is on a 0-100 scale. 
+
+```{r, include = FALSE}
 table_pooled_Q8 <-table(pooled.data$Q8)
-table_Q8_pcw <- cbind(table_Q8, table_pooled_Q8, table_ei002_w)
+table_pooled_Q8
+prop.table(table_pooled_Q8)
+```
+```{r, include = FALSE}
+table_Q8_control <-table(control.data$Q8)
+table_Q8_control
+prop.table(table_Q8_control)
+```
+```{r, include = FALSE}
+total.uas<-addmargins(table_ei002_w)
+total.uas[[length(total.uas)]]
+
+total.control<-addmargins(table_Q8_control)
+total.control[[length(total.control)]]
+
+total.pooled<-addmargins(table_pooled_Q8)
+total.pooled[[length(total.pooled)]]
+
+total<-cbind(total.uas[[length(total.uas)]], total.pooled[[length(total.pooled)]], total.control[[length(total.control)]])
+total
+```
+```{r, include = FALSE}
+table_Q8_pcw <- cbind(table_ei002_w, table_pooled_Q8, table_Q8_control)
 print(table_Q8_pcw)
 prop.table(table_Q8_pcw, 2)
 chisq.test(table_Q8_pcw)
 ```
-
-# control image, pooled (witout control)
-
-```{r}
-table_Q1_pc <- cbind(table_Q1, table_pooled_Q1)
-print(table_Q1_pc)
-prop.table(table_Q1_pc, 2)
-chisq.test(table_Q1_pc)
-```
-```{r}
-table_Q2_pc <- cbind(table_Q2, table_pooled_Q2)
-print(table_Q2_pc)
-prop.table(table_Q2_pc, 2)
-chisq.test(table_Q2_pc)
-```
-```{r}
-table_Q5_pc <- cbind(table_Q5, table_pooled_Q5)
-print(table_Q5_pc)
-prop.table(table_Q5_pc, 2)
-chisq.test(table_Q5_pc)
+```{r, include = FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table<-rbind(formatC(prop.table(table_Q8_pcw, 2)*100, format = "f" , digits = 1), formatC(total, format = "d"))
+rownames(table) <- c("Yes", "No", "Unsure", "Total N")
+colnames(table) <- c("UAS Only (%)", "All Other Images (%)",  "Neutral Image (%)")
+table
 ```
 
-```{r}
-table_Q6_pc <- cbind(table_Q6, table_pooled_Q6)
-print(table_Q6_pc)
-prop.table(table_Q6_pc, 2)
-chisq.test(table_Q6_pc)
-```
+```{r, echo = FALSE}
+require(knitr)
 
-```{r}
-table_Q8_pc <- cbind(table_Q8, table_pooled_Q8)
-print(table_Q8_pc)
-prop.table(table_Q8_pc, 2)
-chisq.test(table_Q8_pc)
-```
-
-```{r}
-cro(uas244$education)
+kable(table, 
+  caption = "Table 8. Comparing responses from Understanding America Survey, Facebook Advertisement Pooled Images, and Control Image Only for \"In the past seven days, were you worried you would run out of food because of a lack of money or other resources?\"", 
+            digits = 2,
+            align = "c") %>%
+  add_footnote("Note: Proportion of respondents for each category; X-squared = 14.8, df = 4, p = 0.005", notation = "none") %>%
+  row_spec(4, bold = TRUE) %>%
+  kable_styling(latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
