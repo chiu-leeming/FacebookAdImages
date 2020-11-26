@@ -1,8 +1,11 @@
 ---
 title: "Demographic Analysis"
 author: "Samantha Chiu & Leanna Moron"
-date: "11/13/2020"
-output: pdf_document
+date: "11/20/2020"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -11,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, loading FB data, include = FALSE}
+library(foreign)
 library(tidyverse)
 library(haven)
 library(knitr)
@@ -21,10 +25,12 @@ library(dplyr)
 
 week12 <- read_dta("C:/Users/Samantha/Desktop/week12.dta")
 #View(week12)
-attach(week12)
+data <- subset(week12, Q11 >= 2)
+attach(data)
+
 ```
 
-```{r}
+```{r, echo=FALSE, include=FALSE}
 cro(Q9)
 gender <- data$Q9
 gender[gender == 3] <- NA
@@ -37,11 +43,11 @@ prop.table(table_gender,2)
 print(table_gender)
 chisq.test((table_gender))
 ```
-```{r}
+```{r, echo=FALSE, include=FALSE}
 total.gender<-addmargins(table_gender)
 total.gender[[length(total.gender)]]
 
-totals <- addmargins(table(data$gender, data$Image))
+totals <- addmargins(table(gender, Image))
 totals
 total <- c(333, 559, 61, 142, 198)
 ```
@@ -53,20 +59,20 @@ rownames(table) <- c("Female", "Male", "Total N")
 colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
 table
 ```
-```{r, kable table, echo = FALSE}
+```{r, echo = FALSE}
 require(knitr)
 kable(table, 
-      caption = "Table 1. Responses from five advertisement image samples by gender", 
+      caption = "Responses from five advertisement image samples by gender", 
       digits = 2, 
       align = "c") %>%
-add_footnote ("Note: Proportion of respondents by image for each response category; X-squared = 72.4, 4 df, p < 0.001", notation = "none") %>%
+add_footnote ("X$^{2}$ = 72.4, 4 df, p < 0.001", notation = "none") %>%
 row_spec(3, bold = TRUE) %>%
 kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
 ```
 
 
 
-```{r}
+```{r, echo=FALSE, include=FALSE}
 cro(Q10)
 married <- data$Q10
 married [married == 8] <-NA
@@ -76,10 +82,35 @@ prop.table(table_married,2)
 print(table_married)
 chisq.test((table_married))
 ```
+```{r, echo=FALSE, include=FALSE}
+total.married<-addmargins(table_married)
+total.married[[length(total.married)]]
 
-```{r}
+totals <- addmargins(table(married, Image))
+totals
+total <- c(342, 568, 61, 146, 212)
+```
+
+```{r, echo=FALSE, include=FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_married, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("Married", "Not Married", "Total N")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
+table
+```
+```{r, kable table, echo = FALSE}
+require(knitr)
+kable(table, 
+      caption = "Responses from five advertisement image samples by marital status", 
+      digits = 2, 
+      align = "c") %>%
+add_footnote ("X$^{2}$ = 28.4, 4 df, p < 0.001", notation = "none") %>%
+row_spec(3, bold = TRUE) %>%
+kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
+```
+
+```{r, echo=FALSE, include=FALSE}
 cro(Q11)
-table(age)
 
 age <-data$Q11
 age[age == 2] <- 1
@@ -97,8 +128,34 @@ prop.table(table_age,2)
 print(table_age)
 chisq.test((table_age))
 ```
+```{r, echo=FALSE, include=FALSE}
+total.age<-addmargins(table_age)
+total.age[[length(total.age)]]
 
-```{r}
+totals <- addmargins(table(age, Image))
+totals
+total <- c(343, 577, 61, 145, 214)
+```
+
+```{r, echo=FALSE, include=FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_age, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("19-35 years old", "36-65 years old", "66+ years old", "Total N")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
+table
+```
+```{r, echo = FALSE}
+require(knitr)
+kable(table, 
+      caption = "Responses from five advertisement image samples by age group", 
+      digits = 2, 
+      align = "c") %>%
+add_footnote ("X$^{2}$ = 187.39, 8 df, p < 0.001", notation = "none") %>%
+row_spec(4, bold = TRUE) %>%
+kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
+```
+
+```{r, echo=FALSE, include=FALSE}
 cro(Q12)
 education <- data$Q12
 summary(Q12)
@@ -118,6 +175,44 @@ print(table_education)
 chisq.test((table_education))
 ```
 
+```{r, echo=FALSE, include=FALSE}
+total.education<-addmargins(table_education)
+total.education[[length(total.education)]]
 
+totals <- addmargins(table(education, Image))
+totals
+total <- c(153, 300, 27, 82, 89)
+```
 
+```{r, echo=FALSE, include=FALSE}
+options(kableExtra.latex.load_packages = FALSE)
+table <- rbind(formatC(prop.table(table_education, 2)*100, format = "f", digits = 1), formatC(total, format ="d"))
+rownames(table) <- c("HS grad or less", "Some college", "BA or above", "Total N")
+colnames(table) <- c("Neutral (%)", "COVID (%)", "Data Privacy (%)","Finance (%)", "Mental Health (%)")
+table
+```
+
+```{r, echo = FALSE}
+require(knitr)
+kable(table, 
+      caption = "Responses from five advertisement image samples by education group", 
+      digits = 2, 
+      align = "c") %>%
+add_footnote ("X$^{2}$ = 24.36, 8 df, p = 0.002", notation = "none") %>%
+row_spec(4, bold = TRUE) %>%
+kable_styling (latex_options = c("striped", full_width = F, "hold_position"))
+```
+```{r, echo=FALSE, include=FALSE}
+library(haven)
+uas244 <- read_dta("C:/Users/Samantha/Desktop/uas244.dta")
+View(uas244)
+attach(uas244)
+```
+
+```{r, include = FALSE}
+colnames(uas244)
+cro(uas244$gender)
+cro(uas244$age)
+cro(uas244$education)
+```
 
